@@ -1,6 +1,6 @@
 // src-tauri/src/core/storage.rs
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
 #[cfg(target_os = "windows")]
@@ -160,8 +160,7 @@ fn detect_windows_targets() -> Vec<DetectedStorageTarget> {
             _ => "other",
         };
 
-        let path_buf = PathBuf::from(&root);
-        let looks_like_switch = looks_like_switch_target(&path_buf);
+        let looks_like_switch = looks_like_switch_target(Path::new(&root));
         if drive_type != 2 && !looks_like_switch {
             continue;
         }
