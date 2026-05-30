@@ -6,6 +6,10 @@ on:
     tags:
       - 'v*'
 
+# Opt into Node.js 24 for all actions before the forced June 16 2026 deadline
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   release:
     permissions:
@@ -43,7 +47,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
 
       - name: Install Linux system dependencies
