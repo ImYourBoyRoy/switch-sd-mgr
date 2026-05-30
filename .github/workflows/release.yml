@@ -14,19 +14,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows x64 → produces: .msi + NSIS .exe installer
+          # Windows x64 → produces: NSIS .exe installer + .msi
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
+            rust_targets: x86_64-pc-windows-msvc
             bundles: nsis,msi
 
-          # macOS universal → produces: .dmg (runs on both Intel and Apple Silicon)
+          # macOS Universal Binary → produces: .dmg (runs on Intel + Apple Silicon)
+          # Note: 'universal-apple-darwin' is a Tauri pseudo-target. Rustup needs
+          # the two real targets installed; Tauri's CLI lipo-merges the outputs.
           - platform: macos-latest
             target: universal-apple-darwin
+            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
             bundles: dmg
 
-          # Linux x64 → produces: .deb + .AppImage
+          # Linux x64 → produces: .AppImage + .deb
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+            rust_targets: x86_64-unknown-linux-gnu
             bundles: deb,appimage
 
     runs-on: ${{ matrix.platform }}
@@ -55,7 +60,8 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          # Install the actual rustup targets (not Tauri pseudo-targets)
+          targets: ${{ matrix.rust_targets }}
 
       - name: Cache Rust build artifacts
         uses: Swatinem/rust-cache@v2
@@ -83,10 +89,11 @@ jobs:
             | Windows | `*-setup.exe` | Recommended NSIS installer |
             | Windows | `*.msi` | MSI installer (for enterprise/SCCM) |
             | macOS | `*.dmg` | Universal binary (Intel + Apple Silicon) |
-            | Linux | `*.AppImage` | Portable — no install needed |
+            | Linux | `*.AppImage` | Portable — no install needed, mark executable first |
             | Linux | `*.deb` | Debian/Ubuntu package |
 
             > **First time?** See the [README](https://github.com/ImYourBoyRoy/switch-sd-mgr#readme) for setup instructions.
           releaseDraft: true
           prerelease: false
+          # 'target' here is the Tauri build target (universal-apple-darwin is valid here)
           args: --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
