@@ -1,0 +1,479 @@
+{
+  "_schema_version": "2.0",
+  "_description": "Switch configuration files manageable through the SD Updater UI. 'settings' defines the schema, 'overrides' stores user's desired values.",
+  "exosphere": {
+    "display_name": "Exosphere",
+    "description": "Security and debug settings for the bootloader",
+    "requires_package": "atmosphere",
+    "template_path": "sd/atmosphere/config_templates/exosphere.ini",
+    "destination": "sd/atmosphere/exosphere.ini",
+    "section": "exosphere",
+    "settings": {
+      "debugmode": {
+        "type": "int",
+        "default": 1,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Kernel debug mode"
+      },
+      "debugmode_user": {
+        "type": "int",
+        "default": 0,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Userland debug mode"
+      },
+      "disable_user_exception_handlers": {
+        "type": "int",
+        "default": 0,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Disable user exception handlers"
+      },
+      "enable_user_pmu_access": {
+        "type": "int",
+        "default": 0,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Allow userland PMU access"
+      },
+      "blank_prodinfo_sysmmc": {
+        "type": "int",
+        "default": 1,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Blank PRODINFO in sysMMC"
+      },
+      "blank_prodinfo_emummc": {
+        "type": "int",
+        "default": 1,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Blank PRODINFO in emuMMC"
+      },
+      "allow_writing_to_cal_sysmmc": {
+        "type": "int",
+        "default": 0,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Allow writing to CAL0 in sysMMC"
+      },
+      "log_port": {
+        "type": "int",
+        "default": 0,
+        "description": "UART logging port"
+      },
+      "log_baud_rate": {
+        "type": "int",
+        "default": 115200,
+        "description": "UART baud rate"
+      },
+      "log_inverted": {
+        "type": "int",
+        "default": 0,
+        "options": [
+          0,
+          1
+        ],
+        "description": "Invert UART signal"
+      }
+    }
+  },
+  "system_settings": {
+    "display_name": "System Settings",
+    "description": "Atmosphere system configuration and feature toggles",
+    "requires_package": "atmosphere",
+    "template_path": "sd/atmosphere/config_templates/system_settings.ini",
+    "destination": "sd/atmosphere/config/system_settings.ini",
+    "multi_section": true,
+    "sections": {
+      "eupld": {
+        "display_name": "Error Upload",
+        "settings": {
+          "upload_enabled": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Upload error reports to Nintendo"
+          }
+        }
+      },
+      "usb": {
+        "display_name": "USB Settings",
+        "settings": {
+          "usb30_force_enabled": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 1,
+            "description": "Force enable USB 3.0 superspeed"
+          }
+        }
+      },
+      "ro": {
+        "display_name": "RO Loader",
+        "settings": {
+          "ease_nro_restriction": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 1,
+            "description": "Ease NRO validation"
+          }
+        }
+      },
+      "lm": {
+        "display_name": "Log Manager",
+        "settings": {
+          "enable_sd_card_logging": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 1,
+            "description": "Enable Logging to SD"
+          },
+          "sd_card_log_output_directory": {
+            "type": "string",
+            "switch_type": "str",
+            "default": "atmosphere/binlogs",
+            "description": "Log Directory"
+          }
+        }
+      },
+      "erpt": {
+        "display_name": "Error Report",
+        "settings": {
+          "disable_automatic_report_cleanup": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Disable auto cleanup"
+          }
+        }
+      },
+      "atmosphere": {
+        "display_name": "Atmosphere Core",
+        "settings": {
+          "fatal_auto_reboot_interval": {
+            "type": "int",
+            "switch_type": "u64",
+            "default": 1536,
+            "description": "Auto-reboot payload interval (ms)"
+          },
+          "power_menu_reboot_function": {
+            "type": "string",
+            "switch_type": "str",
+            "default": "payload",
+            "description": "Reboot button function"
+          },
+          "dmnt_cheats_enabled_by_default": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Cheats enabled by default"
+          },
+          "dmnt_always_save_cheat_toggles": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Save cheat toggles"
+          },
+          "enable_hbl_bis_write": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Enable HBL BIS Write"
+          },
+          "enable_hbl_cal_read": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Enable HBL CAL Read"
+          },
+          "fsmitm_redirect_saves_to_sd": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Redirect saves to SD"
+          },
+          "enable_am_debug_mode": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Enable AM Debug Mode"
+          },
+          "enable_dns_mitm": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 1,
+            "description": "Enable DNS MITM"
+          },
+          "add_defaults_to_dns_hosts": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 1,
+            "description": "Use default DNS hosts"
+          },
+          "enable_dns_mitm_debug_log": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "DNS MITM Debug Log"
+          },
+          "enable_htc": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Enable HTC"
+          },
+          "enable_log_manager": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "Enable Log Manager"
+          },
+          "enable_external_bluetooth_db": {
+            "type": "switch_bool",
+            "switch_type": "u8",
+            "default": 0,
+            "description": "External Bluetooth DB"
+          }
+        }
+      },
+      "hbloader": {
+        "display_name": "HBL Loader",
+        "settings": {
+          "applet_heap_size": {
+            "type": "int",
+            "switch_type": "u64",
+            "default": 0,
+            "description": "Applet Heap Size"
+          },
+          "applet_heap_reservation_size": {
+            "type": "int",
+            "switch_type": "u64",
+            "default": 140509184,
+            "description": "Applet Reservation Size (0x8600000)"
+          }
+        }
+      }
+    }
+  },
+  "hekate_ipl": {
+    "display_name": "Hekate Boot Config",
+    "description": "Bootloader configuration and boot entries",
+    "requires_package": "hekate",
+    "destination": "sd/bootloader/hekate_ipl.ini",
+    "multi_section": true,
+    "sections": {
+      "config": {
+        "display_name": "Config",
+        "settings": {
+          "autoboot": {
+            "type": "int",
+            "default": 0
+          },
+          "autoboot_list": {
+            "type": "int",
+            "default": 0
+          },
+          "bootwait": {
+            "type": "int",
+            "default": 1
+          },
+          "backlight": {
+            "type": "int",
+            "default": 100
+          },
+          "noticker": {
+            "type": "int",
+            "default": 0
+          },
+          "autohosoff": {
+            "type": "int",
+            "default": 0
+          },
+          "autonogc": {
+            "type": "int",
+            "default": 1
+          },
+          "updater2p": {
+            "type": "int",
+            "default": 1
+          },
+          "bootprotect": {
+            "type": "int",
+            "default": 0
+          }
+        }
+      },
+      "CFW - sysMMC": {
+        "display_name": "CFW - sysMMC",
+        "settings": {
+          "fss0": {
+            "type": "string",
+            "default": "atmosphere/package3"
+          },
+          "atmosphere": {
+            "type": "int",
+            "default": 1
+          },
+          "emummc_force_disable": {
+            "type": "int",
+            "default": 1
+          },
+          "icon": {
+            "type": "string",
+            "default": "bootloader/res/icon_payload.bmp"
+          }
+        }
+      },
+      "Atmosphere (fusee)": {
+        "display_name": "Atmosphere (fusee)",
+        "settings": {
+          "payload": {
+            "type": "string",
+            "default": "bootloader/payloads/fusee.bin"
+          },
+          "icon": {
+            "type": "string",
+            "default": "bootloader/res/icon_payload.bmp"
+          }
+        }
+      },
+      "CFW - emuMMC": {
+        "display_name": "CFW - emuMMC",
+        "settings": {
+          "fss0": {
+            "type": "string",
+            "default": "atmosphere/package3"
+          },
+          "emummcforce": {
+            "type": "int",
+            "default": 1
+          },
+          "atmosphere": {
+            "type": "int",
+            "default": 1
+          },
+          "icon": {
+            "type": "string",
+            "default": "bootloader/res/icon_payload.bmp"
+          }
+        }
+      },
+      "Stock - sysMMC": {
+        "display_name": "Stock - sysMMC",
+        "settings": {
+          "fss0": {
+            "type": "string",
+            "default": "atmosphere/package3"
+          },
+          "emummc_force_disable": {
+            "type": "int",
+            "default": 1
+          },
+          "stock": {
+            "type": "int",
+            "default": 1
+          },
+          "icon": {
+            "type": "string",
+            "default": "bootloader/res/icon_switch.bmp"
+          }
+        }
+      }
+    }
+  },
+  "nyx": {
+    "display_name": "Nyx Theme",
+    "description": "Hekate's graphical menu theme settings",
+    "requires_package": "hekate",
+    "destination": "sd/bootloader/nyx.ini",
+    "section": "config",
+    "settings": {
+      "themebg": {
+        "type": "string",
+        "default": "2d2d2d",
+        "description": "Background color"
+      },
+      "themecolor": {
+        "type": "int",
+        "default": 167,
+        "description": "Theme accent color"
+      },
+      "entries5col": {
+        "type": "int",
+        "default": 0,
+        "description": "5 columns entries"
+      },
+      "timeoffset": {
+        "type": "string",
+        "default": "302bc05c",
+        "description": "Time offset"
+      },
+      "timedst": {
+        "type": "int",
+        "default": 1,
+        "description": "Daylight Savings"
+      },
+      "homescreen": {
+        "type": "int",
+        "default": 0,
+        "description": "Home screen layout"
+      },
+      "verification": {
+        "type": "int",
+        "default": 1,
+        "description": "Verification"
+      },
+      "umsemmcrw": {
+        "type": "int",
+        "default": 0,
+        "description": "UMS eMMC R/W"
+      },
+      "jcdisable": {
+        "type": "int",
+        "default": 0,
+        "description": "Disable JoyCon"
+      },
+      "jcforceright": {
+        "type": "int",
+        "default": 0,
+        "description": "Force JoyCon Right"
+      },
+      "bpmpclock": {
+        "type": "int",
+        "default": 1,
+        "description": "BPMP Clock"
+      }
+    }
+  },
+  "hosts_default": {
+    "display_name": "DNS Hosts (Default)",
+    "description": "DNS blocking rules for default/sysMMC",
+    "requires_package": "atmosphere",
+    "destination": "sd/atmosphere/hosts/default.txt",
+    "file_type": "hosts",
+    "editable_as_text": true
+  },
+  "hosts_emummc": {
+    "display_name": "DNS Hosts (EmuMMC)",
+    "description": "DNS blocking rules for EmuMMC",
+    "requires_package": "atmosphere",
+    "destination": "sd/atmosphere/hosts/emummc.txt",
+    "file_type": "hosts",
+    "editable_as_text": true
+  }
+}

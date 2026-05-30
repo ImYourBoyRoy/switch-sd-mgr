@@ -1,0 +1,11 @@
+{
+  "check_updates_on_load": true,
+  "auto_check_interval_minutes": 0,
+  "confirm_before_delete": true,
+  "debug_logging": true,
+  "log_file": "logs/sd_updater_debug.log",
+  "log_max_size_mb": 10,
+  "log_backup_count": 5,
+  "show_raw_json_option": true,
+  "default_source_type": "github_release"
+}
