@@ -55,9 +55,9 @@ impl SwitchIni {
                 let mut enabled = true;
                 let mut parse_line = trimmed;
 
-                if trimmed.starts_with(';') {
+                if let Some(stripped) = trimmed.strip_prefix(';') {
                     enabled = false;
-                    parse_line = trimmed[1..].trim();
+                    parse_line = stripped.trim();
                 }
 
                 if let Some(eq_idx) = parse_line.find('=') {
@@ -120,8 +120,6 @@ impl SwitchIni {
                 // Parse the value as a number if possible to ensure clean hex formatting
                 if let Ok(num) = value.parse::<u64>() {
                     format!("{}!0x{:x}", vtype.unwrap(), num)
-                } else if value.starts_with("0x") {
-                    format!("{}!{}", vtype.unwrap(), value)
                 } else {
                     format!("{}!{}", vtype.unwrap(), value)
                 }

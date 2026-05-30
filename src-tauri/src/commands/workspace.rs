@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/workspace.rs
-/// Domain-specific controller for Switch environment manager commands related to workspace.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager commands related to workspace.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 
 #[tauri::command]

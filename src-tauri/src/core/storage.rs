@@ -22,11 +22,11 @@ pub struct DetectedStorageTarget {
 pub fn detect_storage_targets() -> Vec<DetectedStorageTarget> {
     #[cfg(target_os = "windows")]
     {
-        return detect_windows_targets();
+        detect_windows_targets()
     }
     #[cfg(target_os = "macos")]
     {
-        return detect_unix_mounts(Path::new("/Volumes"), true);
+        detect_unix_mounts(Path::new("/Volumes"), true)
     }
     #[cfg(target_os = "linux")]
     {
@@ -83,7 +83,7 @@ pub fn eject_storage_target(path: &str) -> Result<(), String> {
             .status()
             .map_err(|e| format!("Failed to eject {}: {}", path, e))
             .and_then(|status| if status.success() { Ok(()) } else { Err(format!("Failed to eject {}", path)) })?;
-        return Ok(());
+        Ok(())
     }
     #[cfg(target_os = "macos")]
     {
@@ -92,7 +92,7 @@ pub fn eject_storage_target(path: &str) -> Result<(), String> {
             .status()
             .map_err(|e| format!("Failed to eject {}: {}", path, e))
             .and_then(|status| if status.success() { Ok(()) } else { Err(format!("Failed to eject {}", path)) })?;
-        return Ok(());
+        Ok(())
     }
     #[cfg(target_os = "linux")]
     {
@@ -103,7 +103,7 @@ pub fn eject_storage_target(path: &str) -> Result<(), String> {
             Ok(ok) if ok.success() => Ok(()),
             Ok(_) | Err(_) => Err(format!("Eject is not available for {}", path)),
         }?;
-        return Ok(());
+        Ok(())
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
     {

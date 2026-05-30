@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/sources.rs
-/// Domain-specific controller for Switch environment manager commands related to sources.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager commands related to sources.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 use crate::core::downloader::Source;
 use serde_json::Value;

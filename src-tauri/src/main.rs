@@ -67,11 +67,10 @@ async fn main() {
         }
         Some(Commands::Update { ids, all }) => {
             let mut target_ids = ids;
-            if all {
-                if let Ok(results) = lib::check_updates_logic(&state).await {
+            if all
+                && let Ok(results) = lib::check_updates_logic(&state).await {
                     target_ids = results.iter().filter(|r| r["has_update"].as_bool().unwrap_or(false)).map(|r| r["id"].as_str().unwrap_or("").to_string()).collect();
                 }
-            }
             if target_ids.is_empty() {
                 println!("[INFO] No updates found/specified.");
                 return;

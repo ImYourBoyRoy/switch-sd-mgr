@@ -271,10 +271,10 @@ impl ConfigManager {
 
         if let Ok(schema_map) = self.load_schema() {
             for (cid, schema) in schema_map {
-                if let Some(pkg) = &schema.requires_package {
-                    if pkg == package_id || package_id.is_empty() {
-                        let _ = self.enforce_config_defaults(&cid, &schema);
-                    }
+                if let Some(pkg) = &schema.requires_package
+                    && (pkg == package_id || package_id.is_empty())
+                {
+                    let _ = self.enforce_config_defaults(&cid, &schema);
                 }
             }
         }
@@ -300,15 +300,15 @@ impl ConfigManager {
 
     pub fn enforce_config_defaults(&self, id: &str, schema: &ConfigSchema) -> Result<bool> {
         let dest = self.resolve_target_path(&schema.destination);
-        if !dest.exists() {
-            if let Some(template) = &schema.template_path {
-                let t_path = self.resolve_target_path(template);
-                if t_path.exists() {
-                    if let Some(parent) = dest.parent() {
-                        fs::create_dir_all(parent)?;
-                    }
-                    let _ = fs::copy(t_path, &dest);
+        if !dest.exists()
+            && let Some(template) = &schema.template_path
+        {
+            let t_path = self.resolve_target_path(template);
+            if t_path.exists() {
+                if let Some(parent) = dest.parent() {
+                    fs::create_dir_all(parent)?;
                 }
+                let _ = fs::copy(t_path, &dest);
             }
         }
 

@@ -1,7 +1,6 @@
 // ./src-tauri/src/core/downloader/mod.rs
-/// Core downloading, github scraping, and local file stream extract mechanisms.
-/// Operational Notes: Integrates GitHub API queries, HTML selectors fallback scraping, and Codeberg API clients.
-
+//! Core downloading, github scraping, and local file stream extract mechanisms.
+//! Operational Notes: Integrates GitHub API queries, HTML selectors fallback scraping, and Codeberg API clients.
 pub mod models;
 pub use models::*;
 
@@ -27,10 +26,10 @@ impl Downloader {
         let ua = user_agent.unwrap_or("SD_Updater/7.0").to_string();
         let mut headers = reqwest::header::HeaderMap::new();
 
-        if let Ok(token) = env::var("GITHUB_TOKEN") {
-            if let Ok(val) = reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token)) {
-                headers.insert(reqwest::header::AUTHORIZATION, val);
-            }
+        if let Ok(token) = env::var("GITHUB_TOKEN")
+            && let Ok(val) = reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))
+        {
+            headers.insert(reqwest::header::AUTHORIZATION, val);
         }
 
         Self {
@@ -116,7 +115,7 @@ impl Downloader {
                 "   [ALT] Selected Alt Source: Fork Upgrade ({} > {})",
                 alt.tag_name, primary.tag_name
             );
-            return alt;
+            alt
         } else if primary.tag_name > alt.tag_name {
             // Case D: Regression Fix Check
             // "alt_source.date > (source.date + 7 days)"
@@ -124,7 +123,7 @@ impl Downloader {
                 info!("   [ALT] Selected Alt Source: Regression Fix (Alt is newer date)");
                 return alt;
             }
-            return primary;
+            primary
         } else {
             // Case C: Hotfix Check (Versions match)
             // "Is alt_source.date > source.date by more than 24 hours?"
@@ -132,7 +131,7 @@ impl Downloader {
                 info!("   [ALT] Selected Alt Source: Hotfix (Versions match, Alt is newer > 24h)");
                 return alt;
             }
-            return primary;
+            primary
         }
     }
 
@@ -251,7 +250,7 @@ impl Downloader {
                     }
 
                     let full_url = format!("https://github.com{}", href);
-                    let name = href.split('/').last().unwrap_or("unknown").to_string();
+                    let name = href.split('/').next_back().unwrap_or("unknown").to_string();
                     if seen_urls.insert(full_url.clone()) {
                         assets.push(Asset {
                             name,
@@ -322,7 +321,7 @@ impl Downloader {
 
                                         let full_url = format!("https://github.com{}", href);
                                         let name =
-                                            href.split('/').last().unwrap_or("unknown").to_string();
+                                            href.split('/').next_back().unwrap_or("unknown").to_string();
                                         extracted.push((full_url, name));
                                     }
                                 }

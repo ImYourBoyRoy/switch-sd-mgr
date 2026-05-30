@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/configs.rs
-/// Domain-specific controller for Switch environment manager commands related to configs.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager commands related to configs.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 use serde_json::Value;
 

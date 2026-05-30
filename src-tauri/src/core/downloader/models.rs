@@ -1,7 +1,6 @@
 // ./src-tauri/src/core/downloader/models.rs
-/// Data models representing Switch SD packages, update sources, release assets, and metadata.
-/// Operational Notes: Included as a sub-module of the core downloader engine.
-
+//! Data models representing Switch SD packages, update sources, release assets, and metadata.
+//! Operational Notes: Included as a sub-module of the core downloader engine.
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 

@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/ui.rs
-/// Domain-specific controller for Switch environment manager commands related to ui.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager commands related to ui.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 
 #[tauri::command]

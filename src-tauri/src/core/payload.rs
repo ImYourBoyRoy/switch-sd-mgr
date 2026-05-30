@@ -81,27 +81,27 @@ impl PayloadManager {
         }
 
         // 2. Optional Boot Bin Mirror
-        if self.settings.enabled {
-            if let Some(info) = payload_info {
-                let destination = self.render_output_path(info, &file_name);
+        if self.settings.enabled
+            && let Some(info) = payload_info
+        {
+            let destination = self.render_output_path(info, &file_name);
 
-                // RCMLoader Case-Insensitive Pattern Matching (Parity with Python fnmatch)
-                let mut matched = wildmatch::WildMatch::new(&info.pattern.to_lowercase())
-                    .matches(&file_name.to_lowercase());
+            // RCMLoader Case-Insensitive Pattern Matching (Parity with Python fnmatch)
+            let mut matched = wildmatch::WildMatch::new(&info.pattern.to_lowercase())
+                .matches(&file_name.to_lowercase());
 
-                // Special case for Atmosphere (Legacy compatibility)
-                if !matched
-                    && info.folder == "ATMOSPHERE"
-                    && file_name.to_lowercase() == "fusee.bin"
-                {
-                    matched = true;
-                }
+            // Special case for Atmosphere (Legacy compatibility)
+            if !matched
+                && info.folder == "ATMOSPHERE"
+                && file_name.to_lowercase() == "fusee.bin"
+            {
+                matched = true;
+            }
 
-                if matched {
-                    if let Ok(path) = self.safe_copy(file_path, &destination) {
-                        created.push(path);
-                    }
-                }
+            if matched
+                && let Ok(path) = self.safe_copy(file_path, &destination)
+            {
+                created.push(path);
             }
         }
 

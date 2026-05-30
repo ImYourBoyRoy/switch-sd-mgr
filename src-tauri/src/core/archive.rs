@@ -44,7 +44,7 @@ impl ArchiveHandler {
         let mut all_in_wrapper = true;
 
         // Peek first entry to see if it's a candidate
-        if archive.len() > 0 {
+        if !archive.is_empty() {
             let first = archive.by_index(0)?;
             let parts: Vec<&str> = first.name().split('/').collect();
             if parts.len() > 1 {
@@ -134,14 +134,13 @@ impl ArchiveHandler {
                 }
 
                 // 2. Enforce allowed extensions (if list is non-empty)
-                if !self.allowed_root_exts.is_empty() {
-                    if !self
+                if !self.allowed_root_exts.is_empty()
+                    && !self
                         .allowed_root_exts
                         .iter()
                         .any(|e| e.to_lowercase() == ext)
-                    {
-                        continue;
-                    }
+                {
+                    continue;
                 }
             }
 

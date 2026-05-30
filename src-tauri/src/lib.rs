@@ -144,7 +144,7 @@ fn install_phase_for_source(source: &Source) -> String {
 }
 
 fn install_priority_for_source(source: &Source) -> i32 {
-    source.install_priority.unwrap_or_else(|| match source.id.as_str() {
+    source.install_priority.unwrap_or(match source.id.as_str() {
         "atmosphere" => 0,
         "hekate" => 10,
         _ => 1000,
@@ -176,7 +176,7 @@ fn emit_progress(app: Option<&tauri::AppHandle>, stage: &str, message: impl Into
 }
 
 fn clean_source_id(name: &str) -> String {
-    name.trim().trim_matches('/').split('/').last().unwrap_or(name).chars().map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '_' }).collect::<String>().trim_matches('_').to_string()
+    name.trim().trim_matches('/').split('/').next_back().unwrap_or(name).chars().map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '_' }).collect::<String>().trim_matches('_').to_string()
 }
 
 fn source_paths(cm: &crate::core::config::ConfigManager, app_config: &crate::core::config::AppConfig) -> (PathBuf, PathBuf) {
@@ -348,15 +348,13 @@ fn write_portable_settings(path: &Path, settings: &PortableSettings) -> Result<(
 
 fn has_meaningful_setup(state: &AppState) -> bool {
     let cm = state.config_mgr.lock().unwrap();
-    if let Ok(entries) = std::fs::read_dir(&cm.sd_root) {
-        if entries.filter_map(|entry| entry.ok()).next().is_some() {
+    if let Ok(entries) = std::fs::read_dir(&cm.sd_root)
+        && entries.filter_map(|entry| entry.ok()).next().is_some() {
             return true;
-        }
     }
-    if let Ok(entries) = std::fs::read_dir(&cm.custom_dir) {
-        if entries.filter_map(|entry| entry.ok()).next().is_some() {
+    if let Ok(entries) = std::fs::read_dir(&cm.custom_dir)
+        && entries.filter_map(|entry| entry.ok()).next().is_some() {
             return true;
-        }
     }
     let app_config = state.app_config.lock().unwrap();
     let (_, manifest_path) = source_paths(&cm, &app_config);
@@ -661,8 +659,8 @@ pub async fn run_update_logic_with_progress(state: &AppState, ids: Vec<String>, 
             let install_to = if let Some(dir) = &source.install_dir {
                 state.config_mgr.lock().unwrap().resolve_target_path(dir)
             } else {
-                let ext = format!(".{}", asset.name.split('.').last().unwrap_or(""));
-                smart_paths.get(&ext).map(|p| state.config_mgr.lock().unwrap().resolve_target_path(p)).unwrap_or_else(|| sd_root.clone())
+                let ext = format!(".{}", asset.name.split('.').next_back().unwrap_or(""));
+                smart_paths.get(&ext).cloned().map(|p| state.config_mgr.lock().unwrap().resolve_target_path(&p)).unwrap_or_else(|| sd_root.clone())
             };
             emit_progress(app, "update", format!("Installing {} to {}", asset.name, install_to.display()), Some(id.clone()), Some(index + 1), Some(total));
             let p = archive_handler.install_single_file(&tmp_path, &install_to, Some(&asset.name)).map_err(|e| e.to_string())?;
@@ -833,7 +831,7 @@ pub async fn run_remote_update_logic_with_progress(
             let install_to = if let Some(dir) = &source.install_dir {
                 state.config_mgr.lock().unwrap().resolve_target_path(dir)
             } else {
-                let extension = format!(".{}", asset.name.split('.').last().unwrap_or(""));
+                let extension = format!(".{}", asset.name.split('.').next_back().unwrap_or(""));
                 smart_paths
                     .get(&extension)
                     .map(|path| state.config_mgr.lock().unwrap().resolve_target_path(path))
@@ -945,31 +943,29 @@ pub fn run() {
         None
     };
 
-    if let Some(settings_path) = settings_to_read {
-        if let Ok(content) = std::fs::read_to_string(&settings_path) {
-            if let Ok(settings) = serde_json::from_str::<PortableSettings>(&content) {
-                workspace_root = settings.workspace_root;
-                data_root = settings.data_root;
-                sd_root = settings.sd_root;
-                rcm_root = settings.rcm_root;
-                custom_stuff_root = settings.custom_stuff_root;
-                let _ = write_portable_settings(
-                    &p_settings_path,
-                    &PortableSettings {
-                        workspace_root: workspace_root.clone(),
-                        data_root: data_root.clone(),
-                        sd_root: sd_root.clone(),
-                        rcm_root: rcm_root.clone(),
-                        custom_stuff_root: custom_stuff_root.clone(),
-                        theme: settings.theme.clone(),
-                        payload_output_enabled: settings.payload_output_enabled,
-                        payload_naming_template: settings.payload_naming_template.clone(),
-                        walkthrough_completed: settings.walkthrough_completed,
-                        backup_before_config_apply: settings.backup_before_config_apply,
-                    },
-                );
-            }
-        }
+    if let Some(settings_path) = settings_to_read
+        && let Ok(content) = std::fs::read_to_string(&settings_path)
+        && let Ok(settings) = serde_json::from_str::<PortableSettings>(&content) {
+            workspace_root = settings.workspace_root;
+            data_root = settings.data_root;
+            sd_root = settings.sd_root;
+            rcm_root = settings.rcm_root;
+            custom_stuff_root = settings.custom_stuff_root;
+            let _ = write_portable_settings(
+                &p_settings_path,
+                &PortableSettings {
+                    workspace_root: workspace_root.clone(),
+                    data_root: data_root.clone(),
+                    sd_root: sd_root.clone(),
+                    rcm_root: rcm_root.clone(),
+                    custom_stuff_root: custom_stuff_root.clone(),
+                    theme: settings.theme.clone(),
+                    payload_output_enabled: settings.payload_output_enabled,
+                    payload_naming_template: settings.payload_naming_template.clone(),
+                    walkthrough_completed: settings.walkthrough_completed,
+                    backup_before_config_apply: settings.backup_before_config_apply,
+                },
+            );
     }
 
     let config_mgr = ConfigManager::new(workspace_root, Some(data_root), Some(sd_root), Some(rcm_root), Some(custom_stuff_root));

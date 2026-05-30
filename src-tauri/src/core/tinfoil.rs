@@ -31,16 +31,16 @@ impl TinfoilConnector {
                 Selector::parse("ul.downloads a[href*='Self%20Installer'][href$='.zip']")
                     .map_err(|_| anyhow!("Invalid selector"))?;
 
-            if let Some(link) = document.select(&selector).next() {
-                if let Some(href) = link.value().attr("href") {
-                    download_url = if href.starts_with("/") {
-                        format!("{}{}", base_url, href)
-                    } else if href.starts_with("//") {
-                        format!("https:{}", href)
-                    } else {
-                        href.to_string()
-                    };
-                }
+            if let Some(link) = document.select(&selector).next()
+                && let Some(href) = link.value().attr("href")
+            {
+                download_url = if href.starts_with("/") {
+                    format!("{}{}", base_url, href)
+                } else if href.starts_with("//") {
+                    format!("https:{}", href)
+                } else {
+                    href.to_string()
+                };
             }
         }
 

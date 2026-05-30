@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/utilities.rs
-/// Domain-specific controller for Switch environment manager utility commands.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager utility commands.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 use std::fs::File;
 use std::io::{Read, Write};
@@ -145,8 +144,8 @@ pub async fn cmd_benchmark_storage(state: tauri::State<'_, AppState>) -> Result<
 
     // Generate random mock data
     let mut write_data = vec![0u8; test_size_bytes];
-    for i in 0..test_size_bytes {
-        write_data[i] = (i % 256) as u8;
+    for (i, byte) in write_data.iter_mut().enumerate() {
+        *byte = (i % 256) as u8;
     }
     
     // Hash original data for integrity check

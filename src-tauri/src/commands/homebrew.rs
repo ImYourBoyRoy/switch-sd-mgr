@@ -1,7 +1,6 @@
 // ./src-tauri/src/commands/homebrew.rs
-/// Domain-specific controller for Switch environment manager commands related to homebrew.
-/// Operational Notes: Included as a sub-module of the tauri command router.
-
+//! Domain-specific controller for Switch environment manager commands related to homebrew.
+//! Operational Notes: Included as a sub-module of the tauri command router.
 use crate::*;
 
 #[tauri::command]
@@ -27,10 +26,10 @@ pub async fn cmd_check_integrity(state: tauri::State<'_, AppState>) -> Result<St
     let app_config = state.app_config.lock().unwrap();
     let manifest_path = config_mgr.resolve_data_file(app_config.paths.get("manifest_lock").map(|s| s.as_str()), "manifest.lock");
     let manifest = ManifestManager::new(manifest_path);
-    if manifest.data.entries.is_empty() && config_mgr.sd_root.exists() {
-        if let Ok(entries) = std::fs::read_dir(&config_mgr.sd_root) {
-            if entries.count() > 0 { return Ok("mismatch_detected".to_string()); }
-        }
+    if manifest.data.entries.is_empty() && config_mgr.sd_root.exists()
+        && let Ok(entries) = std::fs::read_dir(&config_mgr.sd_root)
+        && entries.count() > 0 {
+            return Ok("mismatch_detected".to_string());
     }
     Ok("ok".to_string())
 }

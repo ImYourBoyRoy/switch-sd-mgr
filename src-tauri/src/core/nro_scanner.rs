@@ -27,12 +27,11 @@ impl NroScanner {
         let _ = fs::create_dir_all(&icon_dir);
         if let Some(parent) = cache_file.parent() { let _ = fs::create_dir_all(parent); }
         let mut cache = HashMap::new();
-        if cache_file.exists() {
-            if let Ok(content) = fs::read_to_string(&cache_file) {
-                if let Ok(data) = serde_json::from_str(&content) {
-                    cache = data;
-                }
-            }
+        if cache_file.exists()
+            && let Ok(content) = fs::read_to_string(&cache_file)
+            && let Ok(data) = serde_json::from_str(&content)
+        {
+            cache = data;
         }
         Self { sd_root, cache_file, icon_dir, cache }
     }
@@ -49,7 +48,7 @@ impl NroScanner {
             let rel_path = path.strip_prefix(&self.sd_root)?.to_string_lossy().to_string().replace("\\", "/");
             current_paths.push(rel_path.clone());
             let mtime = entry.metadata()?.modified()?.duration_since(std::time::UNIX_EPOCH)?.as_secs();
-            if let Some(cached) = self.cache.get(&rel_path) { if cached.mtime == mtime { continue; } }
+            if let Some(cached) = self.cache.get(&rel_path) && cached.mtime == mtime { continue; }
             if let Ok(meta) = self.parse_nro(path, &rel_path) {
                 let mut meta_with_time = meta;
                 meta_with_time.mtime = mtime;

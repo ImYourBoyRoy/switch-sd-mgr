@@ -56,10 +56,10 @@ impl ManifestManager {
             None => return true,
         };
 
-        if let Some(h) = remote_hash {
-            if entry.hash.as_deref() != Some(h) {
-                return true;
-            }
+        if let Some(h) = remote_hash
+            && entry.hash.as_deref() != Some(h)
+        {
+            return true;
         }
 
         let local_ver =
