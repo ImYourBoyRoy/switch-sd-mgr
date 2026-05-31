@@ -18,11 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows x64 → produces: NSIS .exe installer + .msi
+          # Windows x64 → produces: NSIS .exe installer (plus our manual portable ZIP)
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
             rust_targets: x86_64-pc-windows-msvc
-            bundles: nsis,msi
+            bundles: nsis
 
           # macOS Universal Binary → produces: .dmg (runs on Intel + Apple Silicon)
           # Note: 'universal-apple-darwin' is a Tauri pseudo-target. Rustup needs
@@ -81,17 +81,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "Switch SD Updater ${{ github.ref_name }}"
+          releaseName: "Switch SD Manager ${{ github.ref_name }}"
           releaseBody: |
-            ## Switch SD Updater ${{ github.ref_name }}
+            ## Switch SD Manager ${{ github.ref_name }}
 
             Cross-platform automated release.
 
             ### Downloads
             | Platform | File | Notes |
             |---|---|---|
-            | Windows | `*-setup.exe` | Recommended NSIS installer |
-            | Windows | `*.msi` | MSI installer (for enterprise/SCCM) |
+            | Windows | `Switch-SD-Manager_Windows_Portable.zip` | **Portable (Recommended)** — Extract and run anywhere! |
+            | Windows | `*-setup.exe` | NSIS installer format |
             | macOS | `*.dmg` | Universal binary (Intel + Apple Silicon) |
             | Linux | `*.AppImage` | Portable — no install needed, mark executable first |
             | Linux | `*.deb` | Debian/Ubuntu package |
@@ -101,3 +101,27 @@ jobs:
           prerelease: false
           # 'target' here is the Tauri build target (universal-apple-darwin is valid here)
           args: --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+
+      - name: Package and Upload Windows Portable Zip
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          $exePath = "src-tauri/target/release/switch-sd-mgr.exe"
+          if (-not (Test-Path $exePath)) {
+            $exePath = "src-tauri/target/x86_64-pc-windows-msvc/release/switch-sd-mgr.exe"
+          }
+          if (Test-Path $exePath) {
+            $zipPath = "src-tauri/target/release/Switch-SD-Manager_Windows_Portable.zip"
+            # Ensure output dir exists
+            New-Item -ItemType Directory -Force -Path "src-tauri/target/release"
+            Compress-Archive -Path $exePath -DestinationPath $zipPath -Force
+            Write-Host "Created portable ZIP at $zipPath"
+            
+            # Upload the ZIP file directly to the release
+            gh release upload ${{ github.ref_name }} $zipPath --clobber
+          } else {
+            Write-Error "Could not find raw executable"
+            exit 1
+          }
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

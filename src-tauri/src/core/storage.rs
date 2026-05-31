@@ -246,6 +246,7 @@ fn looks_like_switch_target(path: &Path) -> bool {
         .any(|name| path.join(name).exists())
 }
 
+#[allow(dead_code)]
 fn dedupe_targets(targets: Vec<DetectedStorageTarget>) -> Vec<DetectedStorageTarget> {
     let mut seen = std::collections::HashSet::new();
     let mut deduped = Vec::new();
