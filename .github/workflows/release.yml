@@ -97,7 +97,7 @@ jobs:
             | Linux | `*.deb` | Debian/Ubuntu package |
 
             > **First time?** See the [README](https://github.com/ImYourBoyRoy/switch-sd-mgr#readme) for setup instructions.
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           # 'target' here is the Tauri build target (universal-apple-darwin is valid here)
           args: --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
