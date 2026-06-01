@@ -383,6 +383,11 @@ function App() {
     addLog(`Using detected storage target ${path}.`, "success");
   };
 
+  const useDetectedRcmTarget = async (path: string) => {
+    await savePaths({ rcm_root: path });
+    addLog(`Using detected RCM Loader target ${path}.`, "success");
+  };
+
   const openDetectedTarget = async (path: string) => {
     await invoke("cmd_open_path_in_file_manager", { path });
   };
@@ -519,6 +524,7 @@ function App() {
               storageTargets={storageTargets}
               loadStorageTargets={loadStorageTargets}
               useDetectedTarget={useDetectedTarget}
+              useDetectedRcmTarget={useDetectedRcmTarget}
               openDetectedTarget={openDetectedTarget}
               ejectDetectedTarget={ejectDetectedTarget}
               showSafeEjectReminder={showSafeEjectReminder}

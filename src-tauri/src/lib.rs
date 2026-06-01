@@ -190,7 +190,7 @@ fn default_sources_path(cm: &crate::core::config::ConfigManager) -> PathBuf {
     if packaged_defaults.exists() {
         return packaged_defaults;
     }
-    cm.workspace_root.join("build").join("data").join("sources.json")
+    cm.workspace_root.join("build").join("configs").join("sources.json")
 }
 
 fn hosts_defaults_path(cm: &crate::core::config::ConfigManager) -> PathBuf {
@@ -198,7 +198,7 @@ fn hosts_defaults_path(cm: &crate::core::config::ConfigManager) -> PathBuf {
     if packaged_defaults.exists() {
         return packaged_defaults;
     }
-    cm.workspace_root.join("build").join("data").join("hosts_config.json")
+    cm.workspace_root.join("build").join("configs").join("hosts_config.json")
 }
 
 fn load_sources_file(path: &Path) -> Result<Vec<Source>, String> {
@@ -930,7 +930,7 @@ pub fn run() {
     let legacy_settings_path = exe_dir.join("portable_settings.json");
     let p_settings_path = exe_dir.join("switch-sd-updater_settings.json");
     let mut workspace_root = exe_dir.clone();
-    let mut data_root = exe_dir.join("data");
+    let mut data_root = exe_dir.join("configs");
     let mut sd_root = exe_dir.join("SD");
     let mut rcm_root = exe_dir.join("RCMLoader");
     let mut custom_stuff_root = exe_dir.join("Custom_stuff");

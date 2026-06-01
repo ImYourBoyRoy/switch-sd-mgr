@@ -14,6 +14,7 @@ interface DashboardViewProps {
   storageTargets: DetectedStorageTarget[];
   loadStorageTargets: () => void;
   useDetectedTarget: (path: string) => void;
+  useDetectedRcmTarget: (path: string) => void;
   openDetectedTarget: (path: string) => void;
   ejectDetectedTarget: (path: string) => void;
   showSafeEjectReminder: boolean;
@@ -49,6 +50,7 @@ export function DashboardView({
   storageTargets,
   loadStorageTargets,
   useDetectedTarget,
+  useDetectedRcmTarget,
   openDetectedTarget,
   ejectDetectedTarget,
   showSafeEjectReminder,
@@ -83,7 +85,7 @@ export function DashboardView({
           <div className="panel-header">
             <div>
               <h3>Detected storage targets</h3>
-              <small>Best-effort removable media detection. Pick one when you want to work directly on a mounted SD card.</small>
+              <small>Best-effort removable media detection. Pick one when you want to work directly on a mounted SD card or connected RCM Loader dongle.</small>
             </div>
             <button className="btn-secondary" onClick={loadStorageTargets} title="Refresh detected storage targets">
               <RefreshCcw size={16} />
@@ -94,14 +96,24 @@ export function DashboardView({
             {storageTargets.map((target) => (
               <article key={target.path} className="detected-target-item">
                 <div>
-                  <strong>{target.label}</strong>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <strong>{target.label}</strong>
+                    {target.kind === "rcm_loader" && (
+                      <span className="badge badge-success" style={{ fontSize: "11px", padding: "2px 6px", borderRadius: "4px" }}>
+                        RCM Loader
+                      </span>
+                    )}
+                  </div>
                   <small>
                     {target.reason} · {target.path}
                   </small>
                 </div>
                 <div className="button-row compact-row">
-                  <button className="btn-secondary" onClick={() => useDetectedTarget(target.path)}>
+                  <button className="btn-secondary" onClick={() => useDetectedTarget(target.path)} title="Use as your Switch SD card target path">
                     Use as SD target
+                  </button>
+                  <button className="btn-secondary" onClick={() => useDetectedRcmTarget(target.path)} title="Use as your Boot Bin / RCMLoader target path">
+                    Use as Boot Bin target
                   </button>
                   <button className="btn-ghost" onClick={() => openDetectedTarget(target.path)}>
                     Open

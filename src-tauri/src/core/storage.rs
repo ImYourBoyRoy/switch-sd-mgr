@@ -154,16 +154,25 @@ fn detect_windows_targets() -> Vec<DetectedStorageTarget> {
             .and_then(|value| value.as_str())
             .unwrap_or("");
 
-        let kind = match drive_type {
-            2 => "removable",
-            3 => "fixed",
-            _ => "other",
-        };
+        let path_ref = Path::new(&root);
+        let looks_like_switch = looks_like_switch_target(path_ref);
+        let looks_like_rcm = looks_like_rcm_loader(path_ref, volume_name);
 
-        let looks_like_switch = looks_like_switch_target(Path::new(&root));
         if drive_type != 2 && !looks_like_switch {
             continue;
         }
+
+        let kind = if looks_like_rcm {
+            "rcm_loader"
+        } else if looks_like_switch {
+            "switch_like"
+        } else {
+            match drive_type {
+                2 => "removable",
+                3 => "fixed",
+                _ => "other",
+            }
+        };
 
         targets.push(DetectedStorageTarget {
             path: root.clone(),
@@ -173,7 +182,9 @@ fn detect_windows_targets() -> Vec<DetectedStorageTarget> {
                 format!("{} ({})", volume_name, path)
             },
             kind: kind.to_string(),
-            reason: if looks_like_switch {
+            reason: if looks_like_rcm {
+                "Detected RCM Loader dongle".to_string()
+            } else if looks_like_switch {
                 "Detected Switch-like folder layout".to_string()
             } else {
                 "Detected removable volume".to_string()
@@ -227,17 +238,39 @@ fn push_unix_target(targets: &mut Vec<DetectedStorageTarget>, path: &Path, can_e
         .unwrap_or("Mounted volume")
         .to_string();
     let looks_like_switch = looks_like_switch_target(path);
+    let looks_like_rcm = looks_like_rcm_loader(path, &label);
+
+    let kind = if looks_like_rcm {
+        "rcm_loader"
+    } else if looks_like_switch {
+        "switch_like"
+    } else {
+        "mounted"
+    };
+
     targets.push(DetectedStorageTarget {
         path: path.to_string_lossy().to_string(),
         label,
-        kind: if looks_like_switch { "switch_like" } else { "mounted" }.to_string(),
-        reason: if looks_like_switch {
+        kind: kind.to_string(),
+        reason: if looks_like_rcm {
+            "Detected RCM Loader dongle".to_string()
+        } else if looks_like_switch {
             "Detected Switch-like folder layout".to_string()
         } else {
             "Detected mounted volume".to_string()
         },
         can_eject,
     });
+}
+
+fn looks_like_rcm_loader(path: &Path, volume_name: &str) -> bool {
+    let vol_upper = volume_name.to_uppercase();
+    if vol_upper == "IAP" || vol_upper == "RCM" || vol_upper.contains("RCMLOADER") {
+        return true;
+    }
+    ["IAP", "ATMOSPHERE_HEKATE", "REINX", "SXOS"]
+        .iter()
+        .any(|name| path.join(name).exists())
 }
 
 fn looks_like_switch_target(path: &Path) -> bool {
